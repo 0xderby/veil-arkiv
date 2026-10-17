@@ -115,7 +115,18 @@ async function changeMode(next) {
   mode = next; decrypted.clear(); selected = undefined;
   if (next === 'practice') { live?.stop(); state = practice; status = { kind: 'practice', message: 'Local walkthrough · no on-chain writes' }; render(); return; }
   const wallet = live?.wallet, evidence = live?.evidence;
-  live?.stop(); live = new ArkivBoard(() => { if (mode === 'live') render(); }, (kind, message) => { if (mode !== 'live') return; if (status.kind === 'quota' && !['quota', 'event'].includes(kind)) return; status = { kind, message }; if (kind === 'event') lastEvent = Date.now(); render(); });
+  live?.stop(); live = new ArkivBoard(() => { if (mode === 'live') render(); }, (kind, message) => {
+    if (mode !== 'live') return;
+    if (kind === 'event') {
+      const firstEvent = !lastEvent; lastEvent = Date.now();
+      if (status.kind === 'quota') return;
+      status = { kind, message };
+      if (firstEvent) render();
+      return;
+    }
+    if (status.kind === 'quota' && kind !== 'quota' && !(kind === 'snapshot' && !live.quotaBlocked)) return;
+    status = { kind, message }; render();
+  });
   if (wallet) live.wallet = wallet; if (evidence) live.evidence = evidence;
   state = live; status = { kind: 'connecting', message: 'Connecting to Tiramisu…' }; render();
   try { await live.start(); await storage.write('cachedRecipients', live.responders); }

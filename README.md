@@ -1,5 +1,7 @@
 # Veil
 
+[Open the public app](https://veil-glass-isle.exactsun.chatgpt.site) · [Setup handoff](arkiv/setup.md)
+
 **Private signals. Shared response.** A synthetic coordination demo for Arkiv: Global Tour Stop — Privacy (Global).
 
 **Synthetic demo data only. Fictional Glass Isle, fictional coordinates, fictional needs. This is a demo, not a rescue service.** No free-text incident form or device geolocation.
@@ -14,7 +16,7 @@ Also: temporary browser wallet/faucet setup, optional injected-wallet signing, n
 
 ## Run and verify
 
-Node >=18; tested on Node 24.18.0 / npm 11.16.0, Windows PowerShell.
+Node >=20; tested on Node 24.18.0 / npm 11.16.0, Windows PowerShell.
 
 ```sh
 npm ci
@@ -77,8 +79,10 @@ Independent responders can query shared ciphertext and verify acknowledgement cr
 
 See [schema](arkiv/schema.md), [friction](arkiv/friction.md), [verification](arkiv/verification.md), [evidence](arkiv/evidence.md), [setup](arkiv/setup.md), [video script](arkiv/demo-script.md), [Devfolio draft](arkiv/devfolio-draft.md), and [gate status](arkiv/submission-status.md).
 
-This project directory began empty on 17 October 2026. App/integration code was written during this session. Third-party dependencies: Arkiv SDK, viem, esbuild; their licenses remain applicable. No pre-existing project components were reused here. The builder must review and disclose any additional reused work and baseline commit SHA before submitting.
+This project directory began empty on 17 October 2026. App/integration code was written during this session. Third-party dependencies: Arkiv SDK, viem, esbuild, and test-only fake-indexeddb; their licenses remain applicable. No pre-existing project components were reused here. The builder must review and disclose any additional reused work and baseline commit SHA before submitting.
 
 Deadline: **18 October 2026, 23:59 London/Lagos (22:59 UTC)**. Keep deployment available through 23 October. Do not rewrite history after deadline. A public app alone is insufficient: real Arkiv use, public MIT repo, wallet/transaction evidence, <=3-minute video, and complete Devfolio answers are required.
 
-License: MIT. No analytics or location API is used.
+License: MIT. No analytics or location API is used. Typography loads Google Fonts; that provider may observe ordinary font-request IP/timing metadata. Signal payloads and keys are not sent to it.
+
+![Veil local walkthrough; no on-chain writes](public/preview.jpg)

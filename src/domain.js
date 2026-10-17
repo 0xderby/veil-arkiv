@@ -12,11 +12,13 @@ export const sameAddress = (a, b) => typeof a === 'string' && typeof b === 'stri
 export const allowed = (address, allowlist) => allowlist.some(a => sameAddress(a, address));
 export const value = (entity, name, type) => entity.attributes?.[name]?.type === type ? entity.attributes[name].value : undefined;
 export const immutable = e => e.creationFlags?.readonly === true && e.creationFlags?.permissionlessExtension === false;
+const identity = e => /^0x[a-f0-9]{64}$/i.test(e.key ?? '') && /^0x[a-f0-9]{40}$/i.test(e.creator ?? '') && /^0x[a-f0-9]{40}$/i.test(e.owner ?? '') && typeof e.expiresAt === 'bigint';
 function exactAttributes(e, names) { return Object.keys(e.attributes ?? {}).sort().join(',') === [...names].sort().join(','); }
 export function contextOf(e) {
   return { type: TYPES.signal, zone: value(e, 'zone', 'str'), need: value(e, 'need', 'str'), priority: value(e, 'priority', 'i32'), postedAt: String(value(e, 'postedAt', 'u64')) };
 }
 export function validateSignal(e, head) {
+  if (!identity(e) || e.contentType !== 'application/json') throw new Error('Invalid signal schema or entity metadata.');
   if (value(e, 'type', 'str') !== TYPES.signal || value(e, 'zone', 'str') !== ZONE || !NEEDS.includes(value(e, 'need', 'str')) || ![1, 2, 3].includes(value(e, 'priority', 'i32')) || typeof value(e, 'postedAt', 'u64') !== 'bigint' || !immutable(e) || e.expiresAt <= head || !exactAttributes(e, ['type', 'zone', 'need', 'priority', 'postedAt'])) throw new Error('Invalid signal schema, flags, or expiration.');
   const postedAt = value(e, 'postedAt', 'u64');
   if (postedAt > BigInt(Number.MAX_SAFE_INTEGER) || postedAt < 1n) throw new Error('Invalid timestamp.');
@@ -24,6 +26,7 @@ export function validateSignal(e, head) {
   return e;
 }
 export async function validateResponder(e, head, allowlist) {
+  if (!identity(e) || e.contentType !== 'application/json') throw new Error('Invalid responder entity metadata.');
   if (value(e, 'type', 'str') !== TYPES.responder || value(e, 'zone', 'str') !== ZONE || !allowed(e.creator, allowlist) || !immutable(e) || e.expiresAt <= head || !exactAttributes(e, ['type', 'zone', 'pubkeyId'])) throw new Error('Untrusted or expired responder key.');
   const payload = e.toJson();
   if (payload.version !== 1) throw new Error('Unknown responder-key version.');
@@ -33,6 +36,7 @@ export async function validateResponder(e, head, allowlist) {
   return { keyEntity: e.key, jwk, pubkeyId, creator: e.creator, expiresAt: e.expiresAt };
 }
 export function trustedAck(e, signal, head, allowlist) {
+  if (!identity(e) || e.contentType !== 'application/octet-stream' || !(e.payload instanceof Uint8Array) || e.payload.length !== 0) return false;
   return value(e, 'type', 'str') === TYPES.ack && value(e, 'signalKey', 'key') === signal.key && typeof value(e, 'ackedAt', 'u64') === 'bigint' && value(e, 'ackedAt', 'u64') > 0n && value(e, 'ackedAt', 'u64') <= BigInt(Number.MAX_SAFE_INTEGER) && allowed(e.creator, allowlist) && immutable(e) && e.expiresAt > head && exactAttributes(e, ['type', 'signalKey', 'ackedAt']);
 }
 export function sortSignals(signals) {

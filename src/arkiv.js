@@ -14,7 +14,7 @@ export class ArkivBoard {
   constructor(onChange, onStatus) {
     this.onChange = onChange; this.onStatus = onStatus; this.signals = new Map(); this.acks = new Map(); this.responders = []; this.head = 0n; this.closed = false; this.busy = false; this.evidence = []; this.cleanup = []; this.pendingKeys = new Set(); this.activeHydrations = 0;
     this.client = createPublicClient({ chain: tiramisu, transport: http(CONFIG.http, { retryCount: 0, timeout: 12000, onFetchResponse: response => {
-      if (response.status === 429) this.onStatus('quota', 'Tiramisu query quota reached. An access-key-backed RPC endpoint is required.');
+      if (response.status === 429) { this.quotaBlocked = true; this.pendingKeys.clear(); this.onStatus('quota', 'Tiramisu query quota reached. An access-key-backed RPC endpoint is required.'); }
     } }) });
   }
   async pages(builder) {
@@ -31,6 +31,7 @@ export class ArkivBoard {
   }
   async refresh() {
     if (this.busy || this.closed) return;
+    this.quotaBlocked = false;
     this.busy = true;
     try {
       const id = await this.client.getChainId();
@@ -87,12 +88,16 @@ export class ArkivBoard {
     this.ws.transport.subscribe({ params: ['newHeads'], onData: data => {
       if (this.closed) return;
       const block = data.result?.number;
-      if (block) { this.head = BigInt(block); this.expire(); }
+      if (block) {
+        const next = BigInt(block), missedBlocks = this.lastHead !== undefined && (next > this.lastHead + 1n || next < this.lastHead);
+        this.lastHead = next; this.head = next; this.expire();
+        if (missedBlocks && !this.quotaBlocked) this.refresh().catch(e => this.onStatus('error', this.error(e)));
+      }
     }, onError: e => this.onStatus('error', this.error(e)) }).then(s => { if (this.closed) s.unsubscribe().catch(() => {}); else this.cleanup.push(() => s.unsubscribe().catch(() => {})); }).catch(e => this.onStatus('error', this.error(e)));
     await this.refresh();
   }
   drain() {
-    if (this.closed || this.busy) return;
+    if (this.closed || this.busy || this.quotaBlocked) return;
     while (this.activeHydrations < 2 && this.pendingKeys.size) {
       const entityKey = this.pendingKeys.values().next().value;
       this.pendingKeys.delete(entityKey); this.activeHydrations++;
@@ -108,23 +113,28 @@ export class ArkivBoard {
     }
     if (this.closed) return;
     const type = value(e, 'type', 'str');
+    let relevant = false;
     if (type === TYPES.signal && value(e, 'zone', 'str') === ZONE) {
+      relevant = true;
       try { this.signals.set(e.key, validateSignal(e, this.head)); } catch { this.signals.delete(e.key); }
     } else if (type === TYPES.ack) {
       const signal = this.signals.get(value(e, 'signalKey', 'key'));
+      relevant = Boolean(signal || this.acks.has(e.key));
       if (signal && trustedAck(e, signal, this.head, CONFIG.responderOrgs)) this.acks.set(e.key, e);
       else this.acks.delete(e.key);
     } else if (type === TYPES.responder && value(e, 'zone', 'str') === ZONE) {
+      relevant = true;
       this.responders = this.responders.filter(r => r.keyEntity !== entityKey);
       try { this.responders.push(await validateResponder(e, this.head, CONFIG.responderOrgs)); } catch { /* Reject forged creator. */ }
     }
-    this.onChange();
+    if (relevant) this.onChange();
   }
   expire() {
+    const before = `${this.signals.size}:${this.acks.size}:${this.responders.length}`;
     for (const [k, e] of this.signals) if (e.expiresAt <= this.head) this.signals.delete(k);
     for (const [k, e] of this.acks) if (e.expiresAt <= this.head || !this.signals.has(value(e, 'signalKey', 'key'))) this.acks.delete(k);
     this.responders = this.responders.filter(r => r.expiresAt > this.head);
-    this.onChange();
+    if (before !== `${this.signals.size}:${this.acks.size}:${this.responders.length}`) this.onChange();
   }
   error(e) {
     const message = `${e.shortMessage ?? e.message ?? ''} ${e.details ?? ''}`;

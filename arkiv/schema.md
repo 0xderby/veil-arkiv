@@ -31,7 +31,7 @@ Track: Privacy (Global). Arkiv is the Web3 database and the primary shared data 
 | zone | str | Four-character geohash label; fixed synthetic fixture `s000` initially |
 | need | str | `medical`, `water`, `road`, or `shelter` |
 | priority | i32 | Integer 1–3; 3 is most urgent |
-| postedAt | u64 | Submission-time Unix milliseconds; client asserted, not authoritative |
+| postedAt | u64 | Encryption/draft-time Unix milliseconds; client asserted, not authoritative. Offline drafts may predate chain submission. |
 
 Payload: versioned JSON encryption envelope, `contentType: application/json`. Exact synthetic position and fictional details exist only within its ciphertext. Public envelope fields: algorithm/version, fresh ephemeral ECDH public key, AES-GCM nonce, ciphertext/tag, and per-recipient wrapped-key entries (`pubkeyId`, responder-key entity reference, HKDF salt, wrapping nonce, wrapped AES key). Recipient identifiers, sizes, and recipient count remain visible metadata.
 

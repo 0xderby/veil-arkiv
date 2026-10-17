@@ -1,4 +1,5 @@
 const DB = 'veil-private-demo-v1';
+import { validateEnvelope } from './crypto.js';
 const STORE = 'local';
 let database;
 async function db() {
@@ -26,6 +27,8 @@ export async function remove(key) {
 export async function queue(entry) {
   // This contract rejects plaintext and signer keys before anything reaches storage.
   if (!entry.envelope || entry.envelope.context?.type !== 'veil:v1:signal' || entry.detail || entry.position || entry.privateKey) throw new Error('Only signal ciphertext may enter the outbox.');
+  validateEnvelope(entry.envelope, entry.envelope.context);
+  if (![6, 24, 48].includes(entry.hours)) throw new Error('Invalid outbox lease.');
   const entries = await read('outbox') ?? [];
   if (entries.length >= 20) throw new Error('Outbox is full. Remove an entry first.');
   await write('outbox', [...entries, { id: crypto.randomUUID(), envelope: entry.envelope, hours: entry.hours, queuedAt: Date.now() }]);

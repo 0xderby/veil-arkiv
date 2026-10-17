@@ -12,6 +12,25 @@ Stage: implementation after schema approval. UI, encryption, live SDK adapter, l
 - GitHub CLI saved authentication is invalid. Builder explicitly chose to leave public GitHub publication pending.
 - No signed testnet transactions, real allow-listed wallets, faucet/Hub interaction, or actual socket delivery have been observed yet.
 
+## Deployed browser checks
+
+The public Site at https://veil-glass-isle.exactsun.chatgpt.site deployed successfully and was opened without login. The local walkthrough is explicitly labelled and creates no chain writes.
+
+Verified in the deployed in-app browser:
+
+- Four encrypted fictional examples render; priority sort, synthetic banner, and public/privacy boundary are visible.
+- A medical signal decrypts to its fictional details/grid position; its public-envelope inspector contains ciphertext and excludes the plaintext detail marker.
+- Local acknowledgement updates status; the six-hour road example renews to 24 hours; confirmed local removal changes the board; composing a new synthetic signal restores the count.
+- Tiramisu mode shows real quota failure, rather than local data masquerading as chain results. The UI reported an actual WebSocket entity-event callback while in that mode. This verifies chain-wide callback delivery, not delivery of a Veil creation or reconnection recovery.
+- A non-extractable responder key was generated and saved; the saved-key count remained one after a page reload. Decryption of an on-chain signal with that saved key remains unverified.
+- Temporary browser wallet generation shows a public funding address and reload-loss warning, without displaying the private key. That transient address is not a creator-evidence wallet and is not configured as a responder.
+- A requested 390×844 viewport produced a 375px content area; document scrollWidth equalled clientWidth (no horizontal overflow). Responder and signal-board layouts were inspected; viewport override was reset afterwards.
+- Browser console error/warning capture was empty at the inspected point. No broad cross-browser, accessibility audit, or offline network emulation is claimed.
+
+After feed review, quota exhaustion stops queued hydration until explicit retry, unrelated chain entities do not trigger board renders, and ordinary head updates only rerender when records expire. A block-gap notification triggers a one-off snapshot reconciliation. Storage tests using fake-indexeddb verify ciphertext-only persistence, non-extractable key clone/decryption, rejection of extra plaintext envelope fields/invalid leases, bounded queue, and removal. The final suite has 26 passing tests. fake-indexeddb is test-only; real browser key-count persistence was checked separately. Live pagination across real Veil pages, funded writes, offline queue/reconnect transmission, and expiry/deletion remain pending.
+
+Public GitHub publication remains pending by builder instruction. The local project now has its own Git history and its source is pushed to the Sites source repository; that does not satisfy the public GitHub repository gate.
+
 ## Confirmed from primary challenge sources
 
 Read the canonical [AGENTS.md](https://raw.githubusercontent.com/Arkiv-Network/global-tour-stop-pre-devcon/main/AGENTS.md), [rules](https://raw.githubusercontent.com/Arkiv-Network/global-tour-stop-pre-devcon/main/RULES.md), [rubric](https://raw.githubusercontent.com/Arkiv-Network/global-tour-stop-pre-devcon/main/docs/scoring-rubric.md), and [checklist](https://raw.githubusercontent.com/Arkiv-Network/global-tour-stop-pre-devcon/main/docs/submission-checklist.md).

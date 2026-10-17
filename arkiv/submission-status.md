@@ -1,5 +1,7 @@
 # Gate status — 17 October 2026
 
+Public no-login UI deployment is verified at https://veil-glass-isle.exactsun.chatgpt.site. Its default walkthrough is local. The full working-on-chain gate below remains incomplete.
+
 - [ ] Public working Tiramisu-connected deployment: UI implemented; anonymous quota/funded setup unresolved.
 - [ ] Public MIT repository: source/license ready; GitHub publication pending at builder request.
 - [x] schema.md approved before UI implementation.

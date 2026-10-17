@@ -52,6 +52,6 @@ test('a fresh signal gets different ephemeral key, nonce, and ciphertext', async
 });
 test('malformed envelope and private JWK material are rejected', () => {
   const forged = structuredClone(encrypted); forged.ephemeralPublicKey.d = 'not allowed';
-  assert.throws(() => validateEnvelope(forged, context), /public P-256/);
+  assert.throws(() => validateEnvelope(forged, context), /public-key/);
   assert.throws(() => validateEnvelope({ ...encrypted, iv: '!' }, context), /encoding/);
 });

@@ -58,3 +58,12 @@ Rig: Windows / PowerShell, Node 24.18.0, npm 11.16.0, Arkiv SDK 0.8.1, viem 2.57
 ## Surfaces not yet exercised
 
 Faucet/Hub, block/data explorer inspection, signed entity creation/read-back, on-chain creator filtering, pagination across real pages, extension/equal-target revert, delete, real WS delivery/reconnect, key publication, PWA/offline sync, deployment. Add expected/actual, exact versions, queries, transaction evidence, and reproduction steps when tested.
+
+## 7. Deployment and deployed browser checks
+
+- Surface: Sites static packaging/deployment and deployed browser runtime; separate from Arkiv chain acceptance.
+- Expected: source push, archive, no-login deployment, browser encryption and interaction checks.
+- Actual: source push succeeded; default packager failed because Windows backslash paths were passed to Bash. The unchanged build was staged with the official prepare-site-build.cjs validator and archived with Windows tar; public deployment succeeded. Source commit/packaged output were matched before saving. GitHub publication is separately pending by builder instruction.
+- Browser results: local encrypted post/decrypt, ciphertext inspector, acknowledgement, 6h-to-24h renewal, removal, mobile fit, saved responder-key count across reload, and temporary-wallet funding address all passed. These are not on-chain writes. 26 local tests pass after adapter/storage validation fixes. fake-indexeddb is test-only; actual offline transmission is still unverified.
+- Arkiv browser result: the live board showed quota failure, and a real chain-wide WebSocket callback was observed. No Veil creation event or reconnect test has been verified. Key/ack publication, funded writes, real expiration, and offline transmission remain pending.
+- Reproduction: open the public app in Local walkthrough; follow README steps. Switch to Tiramisu for the actual quota state. Generate a responder key, reload, and inspect the saved-key count. Use 390×844 requested viewport for mobile checks. See verification.md for exact scope.

@@ -3,6 +3,7 @@ const decoder = new TextDecoder();
 const subtle = globalThis.crypto.subtle;
 export const ALGORITHM = 'ECDH-P256-HKDF-SHA256+A256GCM';
 export const bytes = value => encoder.encode(value);
+const exactFields = (object, fields) => object && Object.keys(object).sort().join(',') === [...fields].sort().join(',');
 export const canonical = value => JSON.stringify(value && typeof value === 'object' && !Array.isArray(value)
   ? Object.fromEntries(Object.keys(value).sort().map(k => [k, JSON.parse(canonical(value[k]))]))
   : Array.isArray(value) ? value.map(v => JSON.parse(canonical(v))) : value);
@@ -33,11 +34,15 @@ async function wrappingKey(privateKey, jwk, salt, info, usages) {
   } finally { shared.fill(0); }
 }
 export function validateEnvelope(e, context) {
+  if (!exactFields(e, ['version', 'algorithm', 'context', 'ephemeralPublicKey', 'iv', 'recipients', 'ciphertext']) || !exactFields(e.context, ['type', 'zone', 'need', 'priority', 'postedAt'])) throw new Error('Unexpected envelope fields are not allowed.');
   if (!e || e.version !== 1 || e.algorithm !== ALGORITHM || canonical(e.context) !== canonical(context)) throw new Error('Envelope context does not match public attributes.');
+  if (context.type !== 'veil:v1:signal' || !/^[0123456789bcdefghjkmnpqrstuvwxyz]{4}$/.test(context.zone) || !['medical', 'water', 'road', 'shelter'].includes(context.need) || ![1, 2, 3].includes(context.priority) || !/^[1-9][0-9]{0,15}$/.test(context.postedAt) || BigInt(context.postedAt) > BigInt(Number.MAX_SAFE_INTEGER)) throw new Error('Invalid public signal context.');
+  if (!exactFields(e.ephemeralPublicKey, ['crv', 'kty', 'x', 'y'])) throw new Error('Unexpected public-key fields are not allowed.');
   publicJwk(e.ephemeralPublicKey);
   if (!Array.isArray(e.recipients) || !e.recipients.length || e.recipients.length > 16) throw new Error('Invalid envelope recipients.');
   const seen = new Set();
   for (const r of e.recipients) {
+    if (!exactFields(r, ['pubkeyId', 'keyEntity', 'salt', 'iv', 'wrappedKey'])) throw new Error('Unexpected wrapper fields are not allowed.');
     if (!/^[a-f0-9]{64}$/.test(r.pubkeyId) || !/^0x[a-f0-9]{64}$/i.test(r.keyEntity) || seen.has(r.pubkeyId)) throw new Error('Invalid or duplicate recipient.');
     seen.add(r.pubkeyId);
     if (unbase64(r.salt).length !== 32 || unbase64(r.iv).length !== 12 || unbase64(r.wrappedKey).length !== 48) throw new Error('Invalid key wrapper.');
