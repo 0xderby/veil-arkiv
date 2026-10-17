@@ -83,6 +83,8 @@ This project directory began empty on 17 October 2026. App/integration code was 
 
 Deadline: **18 October 2026, 23:59 London/Lagos (22:59 UTC)**. Keep deployment available through 23 October. Do not rewrite history after deadline. A public app alone is insufficient: real Arkiv use, public MIT repo, wallet/transaction evidence, <=3-minute video, and complete Devfolio answers are required.
 
+Background photo: "Green cliffs in Ireland" by Jon Sullivan, public domain ([Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Green_cliffs_in_Ireland.jpg)), saved as public/img/glass-isle.jpg. Decorative only; it is not Glass Isle or any real incident location.
+
 License: MIT. No analytics or location API is used. Typography loads Google Fonts; that provider may observe ordinary font-request IP/timing metadata. Signal payloads and keys are not sent to it.
 
 ![Veil local walkthrough; no on-chain writes](public/preview.jpg)
