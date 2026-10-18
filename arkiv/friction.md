@@ -66,7 +66,7 @@ Faucet/Hub, block/data explorer inspection, signed entity creation/read-back, on
 - Actual: source push succeeded; default packager failed because Windows backslash paths were passed to Bash. The unchanged build was staged with the official prepare-site-build.cjs validator and archived with Windows tar; public deployment succeeded. Source commit/packaged output were matched before saving. GitHub publication is separately pending by builder instruction.
 - Browser results: local encrypted post/decrypt, ciphertext inspector, acknowledgement, 6h-to-24h renewal, removal, mobile fit, saved responder-key count across reload, and temporary-wallet funding address all passed. These are not on-chain writes. 26 local tests pass after adapter/storage validation fixes. fake-indexeddb is test-only; actual offline transmission is still unverified.
 - Arkiv browser result: the live board showed quota failure, and a real chain-wide WebSocket callback was observed. No Veil creation event or reconnect test has been verified. Key/ack publication, funded writes, real expiration, and offline transmission remain pending.
-- Reproduction: open the public app in Local walkthrough; follow README steps. Switch to Tiramisu for the actual quota state. Generate a responder key, reload, and inspect the saved-key count. Use 390×844 requested viewport for mobile checks. See verification.md for exact scope.
+- Reproduction: open the public app in Local walkthrough; follow README steps. Switch to Tiramisu for the actual quota state. Generate a responder key, reload, and inspect the saved-key count. Use 390×844 requested viewport for mobile checks.
 
 ## 8. Attribute-name revert: SDK message lists uppercase as valid, engine rejected it
 

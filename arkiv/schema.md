@@ -75,7 +75,7 @@ Count an ack only when its immutable `entity.creator` is in the signal zone's re
 
 ## 4. Exact planned queries
 
-These are verified against the installed query builder and rendered offline by `npm run verify:sdk`. They become application queries after approval. Live execution is tracked separately in verification.md; empty results are not proof of writes.
+These are verified against the installed query builder and rendered offline by `npm run verify:sdk`. They become application queries after approval. Live execution is recorded in evidence.md; empty results are not proof of writes.
 
 ```js
 import { createPublicClient } from '@arkiv-network/sdk';
@@ -157,13 +157,13 @@ After approval: demonstrate trusted key publication, encrypted signal write/read
 - [Queries](https://docs.arkiv.network/typescript-sdk/querying-data/)
 - [Mutations](https://docs.arkiv.network/typescript-sdk/mutating-data/)
 - [Events](https://docs.arkiv.network/typescript-sdk/live-events/)
-- Installed SDK source/declarations and viem watchEvent implementation, enumerated in verification.md.
+- Installed SDK source/declarations and viem watchEvent implementation, readable in node_modules after npm ci.
 
 ## Implementation notes after approval
 
 src/crypto.js implements envelope encryption; tests cover two recipients, wrong keys, metadata/ciphertext/wrapper tampering. src/domain.js enforces immutable creator trust, flags, and schema. src/arkiv.js implements Q1–Q3 with real SDK calls, pagination, event hydration, renewal, deletion, and trusted key/ack writes. The numeric filtered query and Q4 above are reproducible examples; the UI filters its complete small zone snapshot in the browser. No claim of additional server range-filter usage is made.
 
-src/practice.js is an isolated, explicitly labelled local adapter and creates no transactions. Browser signing keys stay in memory; responder private keys are non-extractable CryptoKeys stored by IndexedDB structured clone. PWA app shell and ciphertext outbox are implemented; an open page and funded signer are required on reconnect. Browser verification is recorded separately in verification.md.
+src/practice.js is an isolated, explicitly labelled local adapter and creates no transactions. Browser signing keys stay in memory; responder private keys are non-extractable CryptoKeys stored by IndexedDB structured clone. PWA app shell and ciphertext outbox are implemented; an open page and funded signer are required on reconnect. Browser verification is recorded in evidence.md.
 
 The production allow-list is empty until real public org addresses are configured with scripts/configure-responders.mjs. No private-key input exists. Optional injected-wallet signing supports faucet flows that fund only their connected wallet. Live network behavior is not claimed verified merely because code and local tests exist.
 

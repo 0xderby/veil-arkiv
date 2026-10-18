@@ -1,6 +1,6 @@
 # Veil
 
-[Open the public app](https://veil.derbylabs.workers.dev) · [Setup handoff](arkiv/setup.md)
+[Open the public app](https://veil.derbylabs.workers.dev)
 
 **Private signals. Shared response.** A synthetic coordination demo for Arkiv: Global Tour Stop — Privacy (Global).
 
@@ -77,17 +77,13 @@ Independent responders can query shared ciphertext and verify acknowledgement cr
 
 ## Submission
 
-See [schema](arkiv/schema.md), [friction](arkiv/friction.md), [verification](arkiv/verification.md), [evidence](arkiv/evidence.md), [setup](arkiv/setup.md), [video script](arkiv/demo-script.md), [Devfolio draft](arkiv/devfolio-draft.md), and [gate status](arkiv/submission-status.md).
+See [schema](arkiv/schema.md), [friction log](arkiv/friction.md), and [on-chain evidence](arkiv/evidence.md) (wallet roles and transaction hashes; machine-readable copy in [transactions.json](arkiv/transactions.json)).
 
-This project directory began empty on 17 October 2026. App/integration code was written during this session. Third-party dependencies: Arkiv SDK, viem, esbuild, and test-only fake-indexeddb; their licenses remain applicable. No pre-existing project components were reused here. The builder must review and disclose any additional reused work and baseline commit SHA before submitting.
-
-Deadline: **18 October 2026, 23:59 London/Lagos (22:59 UTC)**. Keep deployment available through 23 October. Do not rewrite history after deadline. A public app alone is insufficient: real Arkiv use, public MIT repo, wallet/transaction evidence, <=3-minute video, and complete Devfolio answers are required.
+Built during the event window, 17 to 18 October 2026, in a project that started empty. Third-party dependencies: Arkiv SDK, viem, esbuild, and test-only fake-indexeddb; their licenses remain applicable. No pre-existing project components were reused.
 
 Background photo: "Green cliffs in Ireland" by Jon Sullivan, public domain ([Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Green_cliffs_in_Ireland.jpg)), saved as public/img/glass-isle.jpg. Decorative only; it is not Glass Isle or any real incident location.
 
 License: MIT. No analytics or location API is used. Typography loads Google Fonts; that provider may observe ordinary font-request IP/timing metadata. Signal payloads and keys are not sent to it.
-
-![Veil local walkthrough; no on-chain writes](public/preview.jpg)
 
 ## Deploy (Cloudflare Worker)
 
