@@ -4,7 +4,7 @@ const UPSTREAM = 'https://rpc.tiramisu.db-chain.testnet.arkiv.network';
 const ALLOWED = new Set([
   'eth_chainId', 'eth_blockNumber', 'eth_getBalance', 'eth_getTransactionCount', 'eth_gasPrice', 'eth_maxPriorityFeePerGas',
   'eth_estimateGas', 'eth_feeHistory', 'eth_sendRawTransaction', 'eth_getTransactionReceipt', 'eth_getTransactionByHash',
-  'eth_getBlockByNumber', 'eth_call', 'net_version', 'web3_clientVersion',
+  'eth_getBlockByNumber', 'eth_getBlockByHash', 'eth_fillTransaction', 'eth_call', 'net_version', 'web3_clientVersion',
 ]);
 const allowedMethod = m => typeof m === 'string' && (ALLOWED.has(m) || m.startsWith('arkiv_'));
 const json = (body, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });

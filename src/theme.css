@@ -353,3 +353,4 @@ button:not(:disabled):active { transform: scale(.97); }
 @media (max-width: 1180px) { .hero { --scrim-x: 20px; } }
 @media (max-width: 999px) { .hero { --scrim-x: 18px; } }
 @media (max-width: 700px) { .hero { --scrim-x: 12px; } .hero::before { inset-block: 10px 8px; } }
+.footer a.credit { text-decoration: underline; text-underline-offset: 3px; }
