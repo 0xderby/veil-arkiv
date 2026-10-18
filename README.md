@@ -1,6 +1,6 @@
 # Veil
 
-[Open the public app](https://veil-glass-isle.exactsun.chatgpt.site) · [Setup handoff](arkiv/setup.md)
+[Open the public app](https://veil.derbylabs.workers.dev) · [Setup handoff](arkiv/setup.md)
 
 **Private signals. Shared response.** A synthetic coordination demo for Arkiv: Global Tour Stop — Privacy (Global).
 
@@ -12,7 +12,7 @@ Responsive public board; separate local walkthrough and Tiramisu mode; WebCrypto
 
 Also: temporary browser wallet/faucet setup, optional injected-wallet signing, non-extractable responder CryptoKeys in IndexedDB, ciphertext-only offline outbox, cached app shell, session evidence export, tests, and a CLI acceptance script.
 
-**Verified on Tiramisu (18 Oct 2026):** a CLI run and a separate browser run created, read, decrypted, acknowledged, renewed and deleted real entities. Transaction hashes and wallet roles are in [evidence.md](arkiv/evidence.md) and [transactions.json](arkiv/transactions.json). **Not yet done:** public deployment of the redesigned app, demo video, Devfolio submission. Entity expiry running out on its own and offline outbox submission have not been observed.
+**Verified on Tiramisu (18 Oct 2026):** a CLI run and a separate browser run created, read, decrypted, acknowledged, renewed and deleted real entities. Transaction hashes and wallet roles are in [evidence.md](arkiv/evidence.md) and [transactions.json](arkiv/transactions.json). **Not yet done:** demo video and Devfolio submission. The public app is deployed as a Cloudflare Worker with a key-holding /rpc gateway (see Deploy). Entity expiry running out on its own and offline outbox submission have not been observed.
 
 ## Run and verify
 
@@ -88,3 +88,13 @@ Background photo: "Green cliffs in Ireland" by Jon Sullivan, public domain ([Wik
 License: MIT. No analytics or location API is used. Typography loads Google Fonts; that provider may observe ordinary font-request IP/timing metadata. Signal payloads and keys are not sent to it.
 
 ![Veil local walkthrough; no on-chain writes](public/preview.jpg)
+
+## Deploy (Cloudflare Worker)
+
+`worker/index.js` serves `dist` and a same-origin `/rpc` gateway that holds the Hub access key as a Worker secret (`ARKIV_ACCESS_KEY`); the gateway only forwards a fixed list of JSON-RPC methods and refuses cross-origin requests. Build with the gateway enabled, then deploy:
+
+```sh
+RPC_PROXY=1 npm run build
+npx wrangler secret put ARKIV_ACCESS_KEY
+npx wrangler deploy
+```

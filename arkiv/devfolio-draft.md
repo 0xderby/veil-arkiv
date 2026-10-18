@@ -8,7 +8,7 @@ Do not submit unchanged. Brackets require real evidence, links, or builder decla
 
 **Challenges:** Direct anonymous query returned HTTP 429 ANON_COST_LIMITED. SDK 0.8.1 rejects the suggested `$createdAt` predicate, so explicit numeric postedAt is used. The event wrapper has no zone filter: WS with no fromBlock plus local hydration/filtering is required. See friction.md for exact versions and repros. Live acceptance still awaits working quota and funded wallets.
 
-1. **Live URL:** [verified deployment URL; check no-login access].
+1. **Live URL:** https://veil.derbylabs.workers.dev (Cloudflare Worker; no login; Local walkthrough by default, Tiramisu mode reads the real chain through a same-origin RPC gateway).
 2. **Indian nationality:** [builder answers; Privacy Global has no nationality requirement].
 3. **Why Arkiv:** independent responders query shared ciphertext and verify immutable acknowledgement creators without our database API. Postgres/own API puts availability under an operator; IPFS needs discovery/live-lease indexing; a subgraph needs another write source. Exact plaintext and secret keys stay local. Similar workflows are possible elsewhere with different infrastructure/trust.
 4. **How Arkiv:** [public links to src/arkiv.js, src/domain.js, src/crypto.js]. Namespaced typed attributes, encrypted payloads, createdBy trust, per-type expiration, readonly fields, owner renewal/removal, and event-driven hydration. [Add specific observed transactions/events for every claimed live feature.]

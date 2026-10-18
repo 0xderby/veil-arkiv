@@ -1,8 +1,8 @@
 # Gate status — 17 October 2026
 
-Public no-login UI deployment is verified at https://veil-glass-isle.exactsun.chatgpt.site. Its default walkthrough is local. The full working-on-chain gate below remains incomplete.
+Public no-login deployment (Cloudflare Worker): https://veil.derbylabs.workers.dev. Its default walkthrough is local; Tiramisu mode reads the real chain through a same-origin /rpc gateway.
 
-- [ ] Public working Tiramisu-connected deployment: UI implemented; anonymous quota/funded setup unresolved.
+- [x] Public working Tiramisu-connected deployment: https://veil.derbylabs.workers.dev (Worker + /rpc gateway; live read of real signal and WebSocket event verified on the deployed URL).
 - [x] Public MIT repository: https://github.com/0xderby/veil-arkiv
 - [x] schema.md approved before UI implementation.
 - [x] friction.md with versions, observed expected/actual behavior, and repros.

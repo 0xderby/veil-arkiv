@@ -14,7 +14,7 @@ Stage: implementation after schema approval. UI, encryption, live SDK adapter, l
 
 ## Deployed browser checks
 
-The public Site at https://veil-glass-isle.exactsun.chatgpt.site deployed successfully and was opened without login. The local walkthrough is explicitly labelled and creates no chain writes.
+An earlier static deployment (since replaced by https://veil.derbylabs.workers.dev) deployed successfully and was opened without login. The local walkthrough is explicitly labelled and creates no chain writes.
 
 Verified in the deployed in-app browser:
 
