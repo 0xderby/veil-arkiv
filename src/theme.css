@@ -28,7 +28,7 @@ body::before {
   z-index: -1;
   pointer-events: none;
   background:
-    linear-gradient(180deg, rgba(10, 29, 22, .4) 0%, rgba(10, 29, 22, .56) 50%, rgba(10, 29, 22, .8) 100%),
+    linear-gradient(180deg, rgba(0, 0, 0, .5) 0%, rgba(0, 0, 0, .58) 50%, rgba(0, 0, 0, .74) 100%),
     url('/img/glass-isle.jpg') center / cover no-repeat,
     #10241b;
   transform-origin: 50% 40%;
@@ -338,3 +338,18 @@ button:not(:disabled):active { transform: scale(.97); }
 .source-label, .hero .eyebrow, .breadcrumb, .footer { text-shadow: 0 1px 10px rgba(0, 0, 0, .6); }
 .desktop-break { display: none; }
 .mode-control, .wallet-button { background: rgba(9, 27, 21, .6); }
+
+/* Dark frosted scrim behind the hero copy so it stays readable on any part of the photo */
+.hero { position: relative; isolation: isolate; --scrim-x: 30px; }
+.hero::before {
+  content: ''; position: absolute; z-index: -1; pointer-events: none;
+  inset: 22px calc(var(--scrim-x) * -1) 14px calc(var(--scrim-x) * -1);
+  border-radius: 18px;
+  background: linear-gradient(100deg, rgba(4, 14, 10, .78) 0%, rgba(4, 14, 10, .62) 60%, rgba(4, 14, 10, .5) 100%);
+  border: 1px solid rgba(255, 255, 255, .08);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+}
+.hero p { text-shadow: none; color: #e8f0e4; }
+@media (max-width: 1180px) { .hero { --scrim-x: 20px; } }
+@media (max-width: 999px) { .hero { --scrim-x: 18px; } }
+@media (max-width: 700px) { .hero { --scrim-x: 12px; } .hero::before { inset-block: 10px 8px; } }

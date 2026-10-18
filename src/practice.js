@@ -19,13 +19,13 @@ export class PracticeBoard {
   }
   async submit(envelope, hours, notify = true) {
     const c = envelope.context;
-    const entity = { key: hex(32), owner: this.reporter, creator: this.reporter, createdAt: this.head, expiresAt: this.head + BigInt(hours * 1800), creationFlags: { readonly: true, permissionlessExtension: false }, contentType: 'application/json', attributes: { type: { type: 'str', value: TYPES.signal }, zone: { type: 'str', value: c.zone }, need: { type: 'str', value: c.need }, priority: { type: 'i32', value: c.priority }, postedAt: { type: 'u64', value: BigInt(c.postedAt) } }, toJson: () => structuredClone(envelope) };
+    const entity = { key: hex(32), owner: this.reporter, creator: this.reporter, createdAt: this.head, expiresAt: this.head + BigInt(hours * 1800), creationFlags: { readonly: true, permissionlessExtension: false }, contentType: 'application/json', attributes: { type: { type: 'str', value: TYPES.signal }, zone: { type: 'str', value: c.zone }, need: { type: 'str', value: c.need }, priority: { type: 'i32', value: c.priority }, posted_at: { type: 'u64', value: BigInt(c.postedAt) } }, toJson: () => structuredClone(envelope) };
     this.signals.set(entity.key, entity); if (notify) this.onChange(); return { entityKey: entity.key };
   }
   async ack(signalKey, notify = true) {
     const entity = this.signals.get(signalKey);
     if (!entity) throw new Error('Signal no longer exists.');
-    const ack = { key: hex(32), creator: this.org, owner: this.org, expiresAt: entity.expiresAt + 21600n, contentType: 'application/octet-stream', payload: new Uint8Array(), creationFlags: { readonly: true, permissionlessExtension: false }, attributes: { type: { type: 'str', value: TYPES.ack }, signalKey: { type: 'key', value: signalKey }, ackedAt: { type: 'u64', value: BigInt(Date.now()) } } };
+    const ack = { key: hex(32), creator: this.org, owner: this.org, expiresAt: entity.expiresAt + 21600n, contentType: 'application/octet-stream', payload: new Uint8Array(), creationFlags: { readonly: true, permissionlessExtension: false }, attributes: { type: { type: 'str', value: TYPES.ack }, signal_key: { type: 'key', value: signalKey }, acked_at: { type: 'u64', value: BigInt(Date.now()) } } };
     this.acks.set(ack.key, ack); if (notify) this.onChange(); return { entityKey: ack.key };
   }
   async renew(entityKey, hours) { const e = this.signals.get(entityKey); e.expiresAt = leaseTarget(this.head, e.expiresAt, hours); this.onChange(); return { entityKey }; }

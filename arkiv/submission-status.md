@@ -6,8 +6,8 @@ Public no-login UI deployment is verified at https://veil-glass-isle.exactsun.ch
 - [ ] Public MIT repository: source/license ready; GitHub publication pending at builder request.
 - [x] schema.md approved before UI implementation.
 - [x] friction.md with versions, observed expected/actual behavior, and repros.
-- [ ] Real creator wallets/roles: none configured yet.
-- [ ] Creation hashes and exact successful reproduction: acceptance script ready, not run.
+- [x] Real creator wallets/roles: reporter 0xc788…Aa67, responder org 0x2d1a…DDF8 (see evidence.md).
+- [x] Creation hashes and exact successful reproduction: bootstrap run passed 2026-10-18; hashes in evidence.md.
 - [ ] Actual WebSocket delivery without refresh: implemented, not chain-verified.
 - [ ] Evidence surviving expiration: export/script ready; no hashes yet.
 - [ ] <=3-minute video: timed script ready; recording pending.

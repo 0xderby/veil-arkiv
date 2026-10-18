@@ -17,7 +17,7 @@ test('creator authenticates ack; copying fields and owner does not', () => {
 });
 test('responder key creator is enforced even when owner is trusted', async () => {
   const r = board.responders[0];
-  const entity = { key: r.keyEntity, creator: board.org, owner: board.org, expiresAt: r.expiresAt, contentType: 'application/json', creationFlags: { readonly: true, permissionlessExtension: false }, attributes: { type: { type: 'str', value: TYPES.responder }, zone: { type: 'str', value: 's000' }, pubkeyId: { type: 'str', value: r.pubkeyId } }, toJson: () => ({ version: 1, publicKey: r.jwk }) };
+  const entity = { key: r.keyEntity, creator: board.org, owner: board.org, expiresAt: r.expiresAt, contentType: 'application/json', creationFlags: { readonly: true, permissionlessExtension: false }, attributes: { type: { type: 'str', value: TYPES.responder }, zone: { type: 'str', value: 's000' }, pubkey_id: { type: 'str', value: r.pubkeyId } }, toJson: () => ({ version: 1, publicKey: r.jwk }) };
   assert.equal((await validateResponder(entity, board.head, [board.org])).pubkeyId, r.pubkeyId);
   await assert.rejects(validateResponder({ ...entity, creator: board.reporter }, board.head, [board.org]), /Untrusted/);
 });

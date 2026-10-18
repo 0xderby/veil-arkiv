@@ -67,3 +67,11 @@ Faucet/Hub, block/data explorer inspection, signed entity creation/read-back, on
 - Browser results: local encrypted post/decrypt, ciphertext inspector, acknowledgement, 6h-to-24h renewal, removal, mobile fit, saved responder-key count across reload, and temporary-wallet funding address all passed. These are not on-chain writes. 26 local tests pass after adapter/storage validation fixes. fake-indexeddb is test-only; actual offline transmission is still unverified.
 - Arkiv browser result: the live board showed quota failure, and a real chain-wide WebSocket callback was observed. No Veil creation event or reconnect test has been verified. Key/ack publication, funded writes, real expiration, and offline transmission remain pending.
 - Reproduction: open the public app in Local walkthrough; follow README steps. Switch to Tiramisu for the actual quota state. Generate a responder key, reload, and inspect the saved-key count. Use 390×844 requested viewport for mobile checks. See verification.md for exact scope.
+
+## 8. Attribute-name revert: SDK message lists uppercase as valid, engine rejected it
+
+- Surface: createEntity on Tiramisu via SDK 0.8.1 (revert decoding in node_modules/@arkiv-network/sdk/src/utils/revert.ts).
+- Expected: attribute names may use "A"-"Z", "a"-"z", "0"-"9", ".", "-", "_" with a letter first, per the SDK's own error text.
+- Actual: the first live write (a responder-key entity with an attribute named pubkeyId) reverted: "an attribute name holds "I" (0x49) at byte 6, which is outside the name charset ("A"-"Z", "a"-"z", ...)". The message lists A-Z as allowed while rejecting a capital I. After renaming all four camelCase attributes to snake_case (pubkey_id, posted_at, signal_key, acked_at) the whole flow passed. I did not isolate whether every capital letter is rejected; the observed fact is that the engine rejected a capital the message calls valid.
+- Reproduction: createEntity with attributes: { pubkeyId: str('x') } on Tiramisu; then the same call with pubkey_id.
+- Fix suggestion: make the SDK message and docs say lowercase only, or make the engine accept the documented charset; validate names client-side before a transaction is sent. Offline tests and verify:sdk could not catch this because it needs the engine.

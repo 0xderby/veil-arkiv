@@ -15,32 +15,32 @@ export const immutable = e => e.creationFlags?.readonly === true && e.creationFl
 const identity = e => /^0x[a-f0-9]{64}$/i.test(e.key ?? '') && /^0x[a-f0-9]{40}$/i.test(e.creator ?? '') && /^0x[a-f0-9]{40}$/i.test(e.owner ?? '') && typeof e.expiresAt === 'bigint';
 function exactAttributes(e, names) { return Object.keys(e.attributes ?? {}).sort().join(',') === [...names].sort().join(','); }
 export function contextOf(e) {
-  return { type: TYPES.signal, zone: value(e, 'zone', 'str'), need: value(e, 'need', 'str'), priority: value(e, 'priority', 'i32'), postedAt: String(value(e, 'postedAt', 'u64')) };
+  return { type: TYPES.signal, zone: value(e, 'zone', 'str'), need: value(e, 'need', 'str'), priority: value(e, 'priority', 'i32'), postedAt: String(value(e, 'posted_at', 'u64')) };
 }
 export function validateSignal(e, head) {
   if (!identity(e) || e.contentType !== 'application/json') throw new Error('Invalid signal schema or entity metadata.');
-  if (value(e, 'type', 'str') !== TYPES.signal || value(e, 'zone', 'str') !== ZONE || !NEEDS.includes(value(e, 'need', 'str')) || ![1, 2, 3].includes(value(e, 'priority', 'i32')) || typeof value(e, 'postedAt', 'u64') !== 'bigint' || !immutable(e) || e.expiresAt <= head || !exactAttributes(e, ['type', 'zone', 'need', 'priority', 'postedAt'])) throw new Error('Invalid signal schema, flags, or expiration.');
-  const postedAt = value(e, 'postedAt', 'u64');
+  if (value(e, 'type', 'str') !== TYPES.signal || value(e, 'zone', 'str') !== ZONE || !NEEDS.includes(value(e, 'need', 'str')) || ![1, 2, 3].includes(value(e, 'priority', 'i32')) || typeof value(e, 'posted_at', 'u64') !== 'bigint' || !immutable(e) || e.expiresAt <= head || !exactAttributes(e, ['type', 'zone', 'need', 'priority', 'posted_at'])) throw new Error('Invalid signal schema, flags, or expiration.');
+  const postedAt = value(e, 'posted_at', 'u64');
   if (postedAt > BigInt(Number.MAX_SAFE_INTEGER) || postedAt < 1n) throw new Error('Invalid timestamp.');
   validateEnvelope(e.toJson(), contextOf(e));
   return e;
 }
 export async function validateResponder(e, head, allowlist) {
   if (!identity(e) || e.contentType !== 'application/json') throw new Error('Invalid responder entity metadata.');
-  if (value(e, 'type', 'str') !== TYPES.responder || value(e, 'zone', 'str') !== ZONE || !allowed(e.creator, allowlist) || !immutable(e) || e.expiresAt <= head || !exactAttributes(e, ['type', 'zone', 'pubkeyId'])) throw new Error('Untrusted or expired responder key.');
+  if (value(e, 'type', 'str') !== TYPES.responder || value(e, 'zone', 'str') !== ZONE || !allowed(e.creator, allowlist) || !immutable(e) || e.expiresAt <= head || !exactAttributes(e, ['type', 'zone', 'pubkey_id'])) throw new Error('Untrusted or expired responder key.');
   const payload = e.toJson();
   if (payload.version !== 1) throw new Error('Unknown responder-key version.');
   const jwk = publicJwk(payload.publicKey);
   const pubkeyId = await fingerprint(jwk);
-  if (pubkeyId !== value(e, 'pubkeyId', 'str')) throw new Error('Public-key fingerprint mismatch.');
+  if (pubkeyId !== value(e, 'pubkey_id', 'str')) throw new Error('Public-key fingerprint mismatch.');
   return { keyEntity: e.key, jwk, pubkeyId, creator: e.creator, expiresAt: e.expiresAt };
 }
 export function trustedAck(e, signal, head, allowlist) {
   if (!identity(e) || e.contentType !== 'application/octet-stream' || !(e.payload instanceof Uint8Array) || e.payload.length !== 0) return false;
-  return value(e, 'type', 'str') === TYPES.ack && value(e, 'signalKey', 'key') === signal.key && typeof value(e, 'ackedAt', 'u64') === 'bigint' && value(e, 'ackedAt', 'u64') > 0n && value(e, 'ackedAt', 'u64') <= BigInt(Number.MAX_SAFE_INTEGER) && allowed(e.creator, allowlist) && immutable(e) && e.expiresAt > head && exactAttributes(e, ['type', 'signalKey', 'ackedAt']);
+  return value(e, 'type', 'str') === TYPES.ack && value(e, 'signal_key', 'key') === signal.key && typeof value(e, 'acked_at', 'u64') === 'bigint' && value(e, 'acked_at', 'u64') > 0n && value(e, 'acked_at', 'u64') <= BigInt(Number.MAX_SAFE_INTEGER) && allowed(e.creator, allowlist) && immutable(e) && e.expiresAt > head && exactAttributes(e, ['type', 'signal_key', 'acked_at']);
 }
 export function sortSignals(signals) {
-  return [...signals].sort((a, b) => value(b, 'priority', 'i32') - value(a, 'priority', 'i32') || Number(value(b, 'postedAt', 'u64') - value(a, 'postedAt', 'u64')) || a.key.localeCompare(b.key));
+  return [...signals].sort((a, b) => value(b, 'priority', 'i32') - value(a, 'priority', 'i32') || Number(value(b, 'posted_at', 'u64') - value(a, 'posted_at', 'u64')) || a.key.localeCompare(b.key));
 }
 export function leaseTarget(head, currentExpiry, hours) {
   if (![6, 24, 48].includes(Number(hours))) throw new Error('Choose a 6, 24, or 48 hour lease.');

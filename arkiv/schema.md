@@ -31,7 +31,7 @@ Track: Privacy (Global). Arkiv is the Web3 database and the primary shared data 
 | zone | str | Four-character geohash label; fixed synthetic fixture `s000` initially |
 | need | str | `medical`, `water`, `road`, or `shelter` |
 | priority | i32 | Integer 1–3; 3 is most urgent |
-| postedAt | u64 | Encryption/draft-time Unix milliseconds; client asserted, not authoritative. Offline drafts may predate chain submission. |
+| posted_at | u64 | Encryption/draft-time Unix milliseconds; client asserted, not authoritative. Offline drafts may predate chain submission. |
 
 Payload: versioned JSON encryption envelope, `contentType: application/json`. Exact synthetic position and fictional details exist only within its ciphertext. Public envelope fields: algorithm/version, fresh ephemeral ECDH public key, AES-GCM nonce, ciphertext/tag, and per-recipient wrapped-key entries (`pubkeyId`, responder-key entity reference, HKDF salt, wrapping nonce, wrapped AES key). Recipient identifiers, sizes, and recipient count remain visible metadata.
 
@@ -51,7 +51,7 @@ Lifetime Extension: “Still need help” calls `extendEntity({ entityKey, expir
 | --- | --- | --- |
 | type | str | `veil:v1:responder_key` |
 | zone | str | Four-character synthetic zone |
-| pubkeyId | str | SHA-256 fingerprint of the canonical public P-256 key, not personal data |
+| pubkey_id | str | SHA-256 fingerprint of the canonical public P-256 key, not personal data |
 
 Payload: public JWK (`kty: EC`, `crv: P-256`, `x`, `y`; never `d`) plus envelope version. `contentType: application/json`. Validate the JWK, curve, fingerprint, flags, creator, zone, and expiration before encrypting. A fingerprint is an identifier, not an authorization mechanism.
 
@@ -64,8 +64,8 @@ Flags: `{ readonly: true, permissionlessExtension: false }`. Entity Expiration: 
 | Public attribute | SDK type | Contract / purpose |
 | --- | --- | --- |
 | type | str | `veil:v1:ack` |
-| signalKey | key | Referenced signal's 32-byte entity key |
-| ackedAt | u64 | Unix milliseconds, client asserted |
+| signal_key | key | Referenced signal's 32-byte entity key |
+| acked_at | u64 | Unix milliseconds, client asserted |
 
 Payload: empty `Uint8Array`; `contentType: application/octet-stream`. No responder name or location. Flags: `{ readonly: true, permissionlessExtension: false }`. Acks are append-only in application behavior; owners can still delete/extend/transfer them at protocol level, so do not claim irrevocable persistence.
 
@@ -102,7 +102,7 @@ const keys = client.select()
 
 // Q3: run separately for each allow-listed responder in this signal's zone.
 const acks = client.select()
-  .where(eq('type', str('veil:v1:ack')), eq('signalKey', key(signalKey)))
+  .where(eq('type', str('veil:v1:ack')), eq('signal_key', key(signalKey)))
   .createdBy(orgAddress).limit(200);
 
 // Q4: owner control, not responder trust.
@@ -117,7 +117,7 @@ while (page.hasNextPage()) {
   all.push(...page.entities);
 }
 // For resumption, rebuild the identical query and selection, then .cursor(savedCursor).
-// Sort all pages in the client by priority descending, postedAt descending, key as tie-breaker.
+// Sort all pages in the client by priority descending, posted_at descending, key as tie-breaker.
 // Read attributes via .value after validating .type. Timestamp ordering is reporter asserted.
 ```
 
@@ -134,7 +134,7 @@ Subscribe before initial queries, buffer events during the snapshot, then merge 
 ## 6. Privacy boundaries and offline behavior
 
 - Four-character geohash is deliberately coarse: its grid spans 0.3515625 degrees longitude by 0.17578125 degrees latitude (roughly 39 by 20 km at the equator). This follows the 20-bit geohash grid; it is not a privacy guarantee. Fixture `s000` is an arbitrary synthetic zone for fictional Glass Isle; no actual incident or place is implied. Exact positions use an invented local coordinate grid, with no real device coordinates.
-- Public: type, zone, need, priority, postedAt; wallet creator/owner, transaction timing, expiry, encrypted payload sizes, recipient-key references, key publishers, and ack linkage. Coarse medical needs can themselves be sensitive; synthetic-only use is mandatory.
+- Public: type, zone, need, priority, posted_at; wallet creator/owner, transaction timing, expiry, encrypted payload sizes, recipient-key references, key publishers, and ack linkage. Coarse medical needs can themselves be sensitive; synthetic-only use is mandatory.
 - Exact coordinates/details stay off Arkiv in plaintext. Encrypted copies go on Arkiv. Secret wallet keys, responder private ECDH keys, raw signal AES keys, and plaintext drafts stay off Arkiv entirely. This is confidentiality against public readers, not anonymity or protection from an authorized/compromised responder.
 - Proposed PWA stores encrypted outbox entries in IndexedDB. Offline drafting requires previously validated cached public keys; otherwise do not save a plaintext draft. Revalidate the original recipients before submission; never transmit an unvalidated stale queue. If original keys are retired, require a new draft/envelope for the current recipients. Ciphertext alone cannot be rewrapped after the local AES key is lost. Without cached trusted keys the user can only draft in volatile memory. No secrets in the service-worker cache.
 - Submission needs internet and a funded throwaway wallet. Wallet generation uses browser memory; do not persist/export private keys to source, logs, or storage. CLI keys, if used later, come from environment variables only. A reload loses an in-memory wallet and control of its signals; disclose before posting. Offline ciphertext can survive reload but cannot submit until a funded signer is available. Responder key persistence/unlock design must be verified before claiming durable local decryption.
@@ -166,3 +166,7 @@ src/crypto.js implements envelope encryption; tests cover two recipients, wrong 
 src/practice.js is an isolated, explicitly labelled local adapter and creates no transactions. Browser signing keys stay in memory; responder private keys are non-extractable CryptoKeys stored by IndexedDB structured clone. PWA app shell and ciphertext outbox are implemented; an open page and funded signer are required on reconnect. Browser verification is recorded separately in verification.md.
 
 The production allow-list is empty until real public org addresses are configured with scripts/configure-responders.mjs. No private-key input exists. Optional injected-wallet signing supports faucet flows that fund only their connected wallet. Live network behavior is not claimed verified merely because code and local tests exist.
+
+
+## Naming note (2026-10-18)
+Attribute names are lowercase snake_case (`posted_at`, `pubkey_id`, `signal_key`, `acked_at`). The first live write with camelCase names reverted; see friction.md #8. JSON envelope fields inside the encrypted payload keep their camelCase names; they are not Arkiv attributes.

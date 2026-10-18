@@ -45,7 +45,7 @@ export class ArkivBoard {
       const acks = new Map();
       for (const signal of this.signals.values()) {
         for (const org of CONFIG.responderOrgs) {
-          const results = await this.pages(this.client.select().where(eq('type', str(TYPES.ack)), eq('signalKey', key(signal.key))).createdBy(org));
+          const results = await this.pages(this.client.select().where(eq('type', str(TYPES.ack)), eq('signal_key', key(signal.key))).createdBy(org));
           for (const e of results) if (trustedAck(e, signal, this.head, CONFIG.responderOrgs)) acks.set(e.key, e);
         }
       }
@@ -118,7 +118,7 @@ export class ArkivBoard {
       relevant = true;
       try { this.signals.set(e.key, validateSignal(e, this.head)); } catch { this.signals.delete(e.key); }
     } else if (type === TYPES.ack) {
-      const signal = this.signals.get(value(e, 'signalKey', 'key'));
+      const signal = this.signals.get(value(e, 'signal_key', 'key'));
       relevant = Boolean(signal || this.acks.has(e.key));
       if (signal && trustedAck(e, signal, this.head, CONFIG.responderOrgs)) this.acks.set(e.key, e);
       else this.acks.delete(e.key);
@@ -132,7 +132,7 @@ export class ArkivBoard {
   expire() {
     const before = `${this.signals.size}:${this.acks.size}:${this.responders.length}`;
     for (const [k, e] of this.signals) if (e.expiresAt <= this.head) this.signals.delete(k);
-    for (const [k, e] of this.acks) if (e.expiresAt <= this.head || !this.signals.has(value(e, 'signalKey', 'key'))) this.acks.delete(k);
+    for (const [k, e] of this.acks) if (e.expiresAt <= this.head || !this.signals.has(value(e, 'signal_key', 'key'))) this.acks.delete(k);
     this.responders = this.responders.filter(r => r.expiresAt > this.head);
     if (before !== `${this.signals.size}:${this.acks.size}:${this.responders.length}`) this.onChange();
   }
@@ -168,19 +168,19 @@ export class ArkivBoard {
     await this.loadResponders();
     if (!this.responders.length || envelope.recipients.some(r => !this.responders.some(k => k.pubkeyId === r.pubkeyId && k.keyEntity === r.keyEntity))) throw new Error('A trusted recipient key changed or expired. Create a fresh encrypted draft.');
     const c = envelope.context;
-    const result = await signer.createEntity({ attributes: { type: str(TYPES.signal), zone: str(c.zone), need: str(c.need), priority: i32(c.priority), postedAt: u64(c.postedAt) }, payload: payload(envelope), contentType: 'application/json', flags, expires: ExpirationTime.fromHours(Number(hours)) });
+    const result = await signer.createEntity({ attributes: { type: str(TYPES.signal), zone: str(c.zone), need: str(c.need), priority: i32(c.priority), posted_at: u64(c.postedAt) }, payload: payload(envelope), contentType: 'application/json', flags, expires: ExpirationTime.fromHours(Number(hours)) });
     await this.record('signal', result); await this.hydrate(result.entityKey); return result;
   }
   async publishKey(responder) {
     if (!allowed(this.address(), CONFIG.responderOrgs)) throw new Error('This wallet is not in the deployed responder allow-list. Configure its public address first.');
-    const result = await this.signer().createEntity({ attributes: { type: str(TYPES.responder), zone: str(ZONE), pubkeyId: str(responder.pubkeyId) }, payload: payload({ version: 1, publicKey: responder.jwk }), contentType: 'application/json', flags, expires: ExpirationTime.fromDays(30) });
+    const result = await this.signer().createEntity({ attributes: { type: str(TYPES.responder), zone: str(ZONE), pubkey_id: str(responder.pubkeyId) }, payload: payload({ version: 1, publicKey: responder.jwk }), contentType: 'application/json', flags, expires: ExpirationTime.fromDays(30) });
     await this.record('responder_key', result); await this.loadResponders(); this.onChange(); return result;
   }
   async ack(entityKey) {
     if (!allowed(this.address(), CONFIG.responderOrgs)) throw new Error('Acknowledgements require an allow-listed responder wallet.');
     const signal = await this.client.getEntity(entityKey);
     validateSignal(signal, await this.client.getBlockNumber({ cacheTime: 0 }));
-    const result = await this.signer().createEntity({ attributes: { type: str(TYPES.ack), signalKey: key(entityKey), ackedAt: u64(Date.now()) }, payload: new Uint8Array(), contentType: 'application/octet-stream', flags, expires: ExpirationTime.atBlock(signal.expiresAt + 21600n) });
+    const result = await this.signer().createEntity({ attributes: { type: str(TYPES.ack), signal_key: key(entityKey), acked_at: u64(Date.now()) }, payload: new Uint8Array(), contentType: 'application/octet-stream', flags, expires: ExpirationTime.atBlock(signal.expiresAt + 21600n) });
     await this.record('ack', result); await this.hydrate(result.entityKey); return result;
   }
   async renew(entityKey, hours) {

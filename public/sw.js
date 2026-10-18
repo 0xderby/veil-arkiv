@@ -1,6 +1,6 @@
 // Only static app assets. Never cache RPC, wallet data, plaintext, or third-party responses.
-const CACHE = 'veil-shell-v1';
-const ASSETS = ['/', '/index.html', '/app.js', '/app.css', '/icon.svg', '/manifest.webmanifest'];
+const CACHE = 'veil-shell-v2';
+const ASSETS = ['/', '/index.html', '/app.js', '/app.css', '/icon.svg', '/manifest.webmanifest', '/img/glass-isle.jpg'];
 self.addEventListener('install', event => { event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS))); self.skipWaiting(); });
 self.addEventListener('activate', event => event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k.startsWith('veil-shell-') && k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())));
 self.addEventListener('fetch', event => {

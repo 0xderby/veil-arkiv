@@ -16,7 +16,7 @@ const queries = {
   signals: signals(),
   urgentWater: signals().where(eq('need', str('water')), gte('priority', i32(2))),
   responderKeys: client.select().where(eq('type', str('veil:v1:responder_key')), eq('zone', str(zone))).createdBy(org).limit(200),
-  acks: client.select().where(eq('type', str('veil:v1:ack')), eq('signalKey', key(signalKey))).createdBy(org).limit(200),
+  acks: client.select().where(eq('type', str('veil:v1:ack')), eq('signal_key', key(signalKey))).createdBy(org).limit(200),
   mySignals: signals().ownedBy(org),
 };
 assert.equal(tiramisu.id, 7738577);
