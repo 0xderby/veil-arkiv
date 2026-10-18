@@ -5,6 +5,7 @@ import { str, i32, u64, key } from '@arkiv-network/sdk/attr';
 import { http, webSocket, formatEther, custom } from 'viem';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import { CONFIG } from './config.js';
+import { RPC_HTTP, RPC_WS, redact, keyed } from './endpoints.js';
 import { TYPES, ZONE, contextOf, allowed, value, validateSignal, validateResponder, trustedAck, leaseTarget } from './domain.js';
 import { validateEnvelope } from './crypto.js';
 
@@ -13,7 +14,7 @@ const payload = json => new TextEncoder().encode(JSON.stringify(json));
 export class ArkivBoard {
   constructor(onChange, onStatus) {
     this.onChange = onChange; this.onStatus = onStatus; this.signals = new Map(); this.acks = new Map(); this.responders = []; this.head = 0n; this.closed = false; this.busy = false; this.evidence = []; this.cleanup = []; this.pendingKeys = new Set(); this.activeHydrations = 0;
-    this.client = createPublicClient({ chain: tiramisu, transport: http(CONFIG.http, { retryCount: 0, timeout: 12000, onFetchResponse: response => {
+    this.client = createPublicClient({ chain: tiramisu, transport: http(RPC_HTTP, { retryCount: 0, timeout: 12000, onFetchResponse: response => {
       if (response.status === 429) { this.quotaBlocked = true; this.pendingKeys.clear(); this.onStatus('quota', 'Tiramisu query quota reached. An access-key-backed RPC endpoint is required.'); }
     } }) });
   }
@@ -66,7 +67,7 @@ export class ArkivBoard {
   }
   async start() {
     this.closed = false;
-    this.ws = createPublicClient({ chain: tiramisu, transport: webSocket(CONFIG.ws, { retryCount: 0, timeout: 12000, reconnect: { attempts: 3, delay: 2000 } }) });
+    this.ws = createPublicClient({ chain: tiramisu, transport: webSocket(RPC_WS, { retryCount: 0, timeout: 12000, reconnect: { attempts: 3, delay: 2000 } }) });
     // Real socket path: no fromBlock and no HTTP fallback.
     this.cleanup.push(this.ws.watchEntityEvents({ onEvent: event => {
       if (this.closed) return;
@@ -138,13 +139,13 @@ export class ArkivBoard {
   }
   error(e) {
     const message = `${e.shortMessage ?? e.message ?? ''} ${e.details ?? ''}`;
-    return /429|ANON_COST_LIMITED|quota|budget/i.test(message) ? 'Tiramisu query quota reached. Configure a server-held access key; never embed it in this app.' : (e.shortMessage ?? e.message ?? 'Network request failed.');
+    return /429|ANON_COST_LIMITED|quota|budget/i.test(message) ? (keyed ? 'Tiramisu query quota reached for this access key. Try again later.' : 'Tiramisu query quota reached. This build has no access key; the anonymous budget is shared and refills hourly.') : redact(e.shortMessage ?? e.message ?? 'Network request failed.');
   }
   newWallet() {
     if (this.wallet) throw new Error('A temporary wallet is already active.');
     // No private key is exported, logged, persisted, or sent to the application server.
     const account = privateKeyToAccount(generatePrivateKey());
-    this.wallet = createWalletClient({ account, chain: tiramisu, transport: http(CONFIG.http, { retryCount: 0, timeout: 15000 }) });
+    this.wallet = createWalletClient({ account, chain: tiramisu, transport: http(RPC_HTTP, { retryCount: 0, timeout: 15000 }) });
     return account.address;
   }
   async connectWallet(provider) {

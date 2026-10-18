@@ -12,7 +12,7 @@ Responsive public board; separate local walkthrough and Tiramisu mode; WebCrypto
 
 Also: temporary browser wallet/faucet setup, optional injected-wallet signing, non-extractable responder CryptoKeys in IndexedDB, ciphertext-only offline outbox, cached app shell, session evidence export, tests, and a CLI acceptance script.
 
-**Acceptance is incomplete:** anonymous RPC query returned HTTP 429 ANON_COST_LIMITED; no funded wallets or approved org addresses are configured. No real Veil transactions exist yet. The walkthrough is not chain evidence. GitHub publication is pending at the builder's request. Video recording and Devfolio submission are pending.
+**Verified on Tiramisu (18 Oct 2026):** a CLI run and a separate browser run created, read, decrypted, acknowledged, renewed and deleted real entities. Transaction hashes and wallet roles are in [evidence.md](arkiv/evidence.md) and [transactions.json](arkiv/transactions.json). **Not yet done:** public deployment of the redesigned app, demo video, Devfolio submission. Entity expiry running out on its own and offline outbox submission have not been observed.
 
 ## Run and verify
 
@@ -51,7 +51,7 @@ Open http://127.0.0.1:4173. WebCrypto needs HTTPS or localhost. The dev server s
 4. Connect the approved wallet in Tiramisu mode, create a local responder encryption key, then publish its public half. The private key stays non-extractable in this browser's IndexedDB; clearing storage loses it. A compromised browser can still use the key.
 5. With a funded reporter wallet, post a built-in fictional scenario. Decrypt on the recipient device and acknowledge from an approved wallet. Renew to a strictly later expiry or remove the live entity. Export session evidence before reload.
 
-**RPC quota:** the public endpoint returned HTTP 429 ANON_COST_LIMITED. A [Hub access key](https://docs.arkiv.network/start-here/access-keys/) can raise quota. Keep it in CLI environment variables or server-side. Never embed it in src/config.js, a browser bundle, or a committed URL. If anonymous quota remains unavailable, public live operation requires a secured RPC gateway with a server-held key; this static app does not include one. No transaction relay is implemented.
+**RPC quota:** the anonymous public endpoint shares a small query budget that normal use exhausts (HTTP 429 ANON_COST_LIMITED). Use a [Hub access key](https://docs.arkiv.network/start-here/access-keys/). Never commit it. `npm run dev` (scripts/serve.mjs) exposes a same-origin `/rpc` gateway that adds the key server-side from `ARKIV_ACCESS_KEY`, so it never reaches the browser: build with `RPC_PROXY=1 npm run build` and start with `node --env-file=.env scripts/serve.mjs`. A static host needs the same gateway (for example a Worker) or a key baked into the bundle with `BAKE_KEY=1`, which every visitor can read. Default builds are keyless.
 
 ### CLI acceptance and durable evidence
 

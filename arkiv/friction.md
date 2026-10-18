@@ -75,3 +75,18 @@ Faucet/Hub, block/data explorer inspection, signed entity creation/read-back, on
 - Actual: the first live write (a responder-key entity with an attribute named pubkeyId) reverted: "an attribute name holds "I" (0x49) at byte 6, which is outside the name charset ("A"-"Z", "a"-"z", ...)". The message lists A-Z as allowed while rejecting a capital I. After renaming all four camelCase attributes to snake_case (pubkey_id, posted_at, signal_key, acked_at) the whole flow passed. I did not isolate whether every capital letter is rejected; the observed fact is that the engine rejected a capital the message calls valid.
 - Reproduction: createEntity with attributes: { pubkeyId: str('x') } on Tiramisu; then the same call with pubkey_id.
 - Fix suggestion: make the SDK message and docs say lowercase only, or make the engine accept the documented charset; validate names client-side before a transaction is sent. Offline tests and verify:sdk could not catch this because it needs the engine.
+
+## 9. Anonymous query budget exhausted by ordinary browser use
+
+- Surface: public RPC arkiv_query, anonymous, from the browser app (SDK 0.8.1).
+- Expected: a board that reads one zone's signals, responders and acks works for a normal session.
+- Actual: during one test session the anonymous budget ran out (HTTP 429 ANON_COST_LIMITED), so the post form failed at its responder-key refresh query. The same app worked as soon as requests went through a gateway holding a Hub access key (HTTP 200).
+- Reproduction: open the app in Tiramisu mode, post a signal, repeat a few times within the hour.
+- Fix suggestion: a documented browser-safe path (scoped read-only key or per-origin quota), and a Retry-After style hint in the 429 body.
+- Adaptation: scripts/serve.mjs /rpc gateway; keyless default builds; BAKE_KEY=1 opt-in for hosts without a server.
+
+## 10. Browser flow observations (all passed)
+
+- A browser-generated non-extractable P-256 key can be published by an allow-listed org wallet using only its public JWK, then used to decrypt a real chain signal (evidence.md).
+- A temporary browser wallet loses its signing key on reload, so entities it owns can no longer be renewed or deleted after a refresh. This is documented in the app; plan for it in demos.
+- On Windows with Node 24.18, one scripts/org.mjs run died at exit with a libuv assertion (srcwinasync.c) before recording its transaction; an immediate rerun succeeded. No entity was created by the failed run.

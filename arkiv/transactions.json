@@ -48,5 +48,59 @@
     "expiresAt": "850126",
     "transactionUrl": "https://tiramisu.explorer.arkiv.network/tx/0x448a62ec76a09fd1d65248a489cf46167016dd8ee684f2f7e04a2df728a37f20",
     "recordedAt": "2026-10-18T14:31:44.500Z"
+  },
+  {
+    "kind": "responder_key_browser",
+    "chainId": 7738577,
+    "creator": "0x2d1a32945456e61C8Ad77c3a0f54dD01d6d2DDF8",
+    "entityKey": "0xd87d1a8bfec14aee5f6bd07393857c03898705a3ea1d5e0119c6be6e14d0bd37",
+    "txHash": "0x1bf461b37ca2e67e9e9dd6c5f1281b14ff7e83f55d6dcd30d162db73ffadfda3",
+    "expiresAt": "2038589",
+    "transactionUrl": "https://tiramisu.explorer.arkiv.network/tx/0x1bf461b37ca2e67e9e9dd6c5f1281b14ff7e83f55d6dcd30d162db73ffadfda3",
+    "recordedAt": "2026-10-18T14:47:03.896Z",
+    "source": "browser-flow"
+  },
+  {
+    "kind": "ack_browser_signal",
+    "chainId": 7738577,
+    "creator": "0x2d1a32945456e61C8Ad77c3a0f54dD01d6d2DDF8",
+    "entityKey": "0x31c7c8a8f051609d4f8f7f4c16125bff0465486d631e1c31f5689a352ec791d1",
+    "txHash": "0x219b8b6c16b0839501b3b81f3632bb879f8d1d51d04796129e96c43dbc0e979f",
+    "expiresAt": "850660",
+    "transactionUrl": "https://tiramisu.explorer.arkiv.network/tx/0x219b8b6c16b0839501b3b81f3632bb879f8d1d51d04796129e96c43dbc0e979f",
+    "recordedAt": "2026-10-18T14:50:14.652Z",
+    "source": "browser-flow"
+  },
+  {
+    "chainId": 7738577,
+    "creator": "0x74BaD0b7851D6e4Ea01C6bF2E4Cf652Fc8496B15",
+    "entityKey": "0xdf8e5834da79c7d21f88214bd28b4e090a9b2c84ff73ad6fdbd77064d74c37e1",
+    "expiresAt": "829060",
+    "kind": "signal_browser",
+    "recordedAt": "2026-10-18T14:49:23.152Z",
+    "txHash": "0xfc9d15ba2341602eb12390f0034355a12e9872ffca3525893400ade69c2f4b3e",
+    "transactionUrl": "https://tiramisu.explorer.arkiv.network/tx/0xfc9d15ba2341602eb12390f0034355a12e9872ffca3525893400ade69c2f4b3e",
+    "source": "browser-flow"
+  },
+  {
+    "chainId": 7738577,
+    "creator": "0x74BaD0b7851D6e4Ea01C6bF2E4Cf652Fc8496B15",
+    "entityKey": "0xdf8e5834da79c7d21f88214bd28b4e090a9b2c84ff73ad6fdbd77064d74c37e1",
+    "expiresAt": "829099",
+    "kind": "extension_browser",
+    "recordedAt": "2026-10-18T14:50:43.884Z",
+    "txHash": "0x8d9e556aa962bf0c82545c7b01fb04b65396ae5588c7225b3c122f3b085401b5",
+    "transactionUrl": "https://tiramisu.explorer.arkiv.network/tx/0x8d9e556aa962bf0c82545c7b01fb04b65396ae5588c7225b3c122f3b085401b5",
+    "source": "browser-flow"
+  },
+  {
+    "chainId": 7738577,
+    "creator": "0x74BaD0b7851D6e4Ea01C6bF2E4Cf652Fc8496B15",
+    "entityKey": "0xdf8e5834da79c7d21f88214bd28b4e090a9b2c84ff73ad6fdbd77064d74c37e1",
+    "kind": "delete_browser",
+    "recordedAt": "2026-10-18T14:51:04.536Z",
+    "txHash": "0x19482dd1ebbaf872ede4726b2e4bd4053ad514695d3187eba4e511adb2806590",
+    "transactionUrl": "https://tiramisu.explorer.arkiv.network/tx/0x19482dd1ebbaf872ede4726b2e4bd4053ad514695d3187eba4e511adb2806590",
+    "source": "browser-flow"
   }
 ]
